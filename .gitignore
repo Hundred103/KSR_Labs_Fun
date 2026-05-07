@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,csharp
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,visualstudiocode,csharp
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,visualstudio,csharp,macos
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,visualstudio,csharp,macos
 
 ### Csharp ###
 ## Ignore Visual Studio temporary files, build results, and
@@ -399,6 +399,39 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+### macOS Patch ###
+# iCloud generated files
+*.icloud
+
 ### VisualStudioCode ###
 !.vscode/*.code-snippets
 
@@ -593,4 +626,4 @@ FodyWeavers.xsd
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,csharp
+# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,visualstudio,csharp,macos
