@@ -1,0 +1,7 @@
+REGEDIT4
+
+[HKEY_CURRENT_USER\Software\Classes\Wow6432Node\CLSID\{3F7A6746-5F7C-4A1C-BA61-E2C5C79CC096}]
+@="Klasa"
+[HKEY_CURRENT_USER\Software\Classes\Wow6432Node\CLSID\{3F7A6746-5F7C-4A1C-BA61-E2C5C79CC096}\InProcServer32]
+@="D:\\198263\\COMLab3\\COMLab3\\Lab3\\Debug\\Lab3_6.dll"
+"ThreadingModel"="Both"

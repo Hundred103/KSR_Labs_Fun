@@ -1,0 +1,9 @@
+REGEDIT4
+
+[HKEY_CURRENT_USER\Software\Classes\Wow6432Node\CLSID\{D41B2BB6-8973-4DBD-8A92-B1A81D3F4429}]
+@="Klasa3"
+
+[HKEY_CURRENT_USER\Software\Classes\Wow6432Node\CLSID\{D41B2BB6-8973-4DBD-8A92-B1A81D3F4429}\InProcServer32]
+@="C:\\Users\\studentmkzl\\Desktop\\COMLab1\\COMLab1\\4\\lab4_ksr\\Debug\\lab4_ksr.dll"
+"ThreadingModel"="Both"
+

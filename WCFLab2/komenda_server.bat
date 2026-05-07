@@ -1,0 +1,1 @@
+test.exe http://localhost:63485/Service1.svc/ksr-wcf2-zad5 http://localhost:63485/Service1.svc/ksr-wcf2-zad6

@@ -1,0 +1,29 @@
+REGEDIT4
+
+[HKEY_CURRENT_USER\Software\Classes\KSR20.COM3Klasa.2]
+@="klasa2.Klasa2"
+
+[HKEY_CURRENT_USER\Software\Classes\KSR20.COM3Klasa.2\CLSID]
+@="{F08FB011-E87D-472E-9886-659C2559FB10}"
+
+[HKEY_CURRENT_USER\Software\Classes\WOW6432Node\CLSID\{F08FB011-E87D-472E-9886-659C2559FB10}]
+@="klasa2.Klasa2"
+
+[HKEY_CURRENT_USER\Software\Classes\WOW6432Node\CLSID\{F08FB011-E87D-472E-9886-659C2559FB10}\InprocServer32]
+@="mscoree.dll"
+"ThreadingModel"="Both"
+"Class"="klasa2.Klasa2"
+"Assembly"="Lab3_5, Version=1.0.0.0, Culture=neutral, PublicKeyToken=332395ea735bea40"
+"RuntimeVersion"="v4.0.30319"
+"CodeBase"="file:///D:/198263/COMLab3/COMLab3/5/Lab3_5/bin/Debug/Lab3_5.dll"
+
+[HKEY_CURRENT_USER\Software\Classes\WOW6432Node\CLSID\{F08FB011-E87D-472E-9886-659C2559FB10}\InprocServer32\1.0.0.0]
+"Class"="klasa2.Klasa2"
+"Assembly"="Lab3_5, Version=1.0.0.0, Culture=neutral, PublicKeyToken=332395ea735bea40"
+"RuntimeVersion"="v4.0.30319"
+"CodeBase"="file:///D:/198263/COMLab3/COMLab3/5/Lab3_5/bin/Debug/Lab3_5.dll"
+
+[HKEY_CURRENT_USER\Software\Classes\WOW6432Node\CLSID\{F08FB011-E87D-472E-9886-659C2559FB10}\ProgId]
+@="KSR20.COM3Klasa.2"
+
+[HKEY_CURRENT_USER\Software\Classes\WOW6432Node\CLSID\{F08FB011-E87D-472E-9886-659C2559FB10}\Implemented Categories\{62C8FE65-4EBB-45E7-B440-6E39B2CDBF29}]
