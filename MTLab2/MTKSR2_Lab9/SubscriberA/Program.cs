@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using Message;
+using ConsoleCol;
 
 var builder = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
@@ -29,7 +30,7 @@ var builder = Host.CreateDefaultBuilder(args)
 
 var host = builder.Build();
 
-Console.WriteLine("[A] Subscriber A started");
+ConsoleCol.ConsoleCol.WriteLine("[A] Subscriber A started", ConsoleCol.ConsoleCol.Colors.BrightGreen);
 await host.RunAsync();
 
 public class PublMsgConsumerA : IConsumer<PublishMsg>
@@ -42,11 +43,11 @@ public class PublMsgConsumerA : IConsumer<PublishMsg>
             try
             {
                 await context.RespondAsync(new ReplyA { Sender = "subscriber A" });
-                Console.WriteLine($"[A] Reply to {n}");
+                ConsoleCol.ConsoleCol.WriteLine($"[A] Reply to {n}", ConsoleCol.ConsoleCol.Colors.BrightGreen);
             }
             catch
             {
-                Console.WriteLine("[A] Exception in reply to Publisher!");
+                ConsoleCol.ConsoleCol.WriteLine("[A] Exception in reply to Publisher!", ConsoleCol.ConsoleCol.Colors.BrightRed);
             }
         }
     }

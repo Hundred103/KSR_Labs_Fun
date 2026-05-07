@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Message;
+using ConsoleCol;
 
 var builder = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
@@ -40,7 +41,7 @@ var builder = Host.CreateDefaultBuilder(args)
 
 var host = builder.Build();
 
-Console.WriteLine("[P] Publisher started");
+ConsoleCol.ConsoleCol.WriteLine("[P] Publisher started", ConsoleCol.ConsoleCol.Colors.BrightYellow);
 await host.RunAsync();
 
 public class PublisherState
@@ -62,7 +63,7 @@ public class ReplyAConsumer : IConsumer<ReplyA>
 
     public async Task Consume(ConsumeContext<ReplyA> ctx)
     {
-        Console.WriteLine($"[P] Got ReplyA from {ctx.Message.Sender}");
+        ConsoleCol.ConsoleCol.WriteLine($"[P] Got ReplyA from {ctx.Message.Sender}", ConsoleCol.ConsoleCol.Colors.BrightGreen);
         await HandleReply(ctx.Message);
     }
 
@@ -74,7 +75,7 @@ public class ReplyAConsumer : IConsumer<ReplyA>
             if (msg is ReplyB) _state.TotalB++;
             if (new Random().NextDouble() < 0.33)
             {
-                Console.WriteLine("[P] Error handling reply!");
+                ConsoleCol.ConsoleCol.WriteLine("[P] Error handling reply!", ConsoleCol.ConsoleCol.Colors.BrightRed);
                 await Task.Delay(100);
                 continue;
             }
@@ -94,7 +95,7 @@ public class ReplyBConsumer : IConsumer<ReplyB>
 
     public async Task Consume(ConsumeContext<ReplyB> ctx)
     {
-        Console.WriteLine($"[P] Got ReplyB from {ctx.Message.Sender}");
+        ConsoleCol.ConsoleCol.WriteLine($"[P] Got ReplyB from {ctx.Message.Sender}", ConsoleCol.ConsoleCol.Colors.BrightCyan);
         await HandleReply(ctx.Message);
     }
 
@@ -106,7 +107,7 @@ public class ReplyBConsumer : IConsumer<ReplyB>
             if (msg is ReplyB) _state.TotalB++;
             if (new Random().NextDouble() < 0.33)
             {
-                Console.WriteLine("[P] Error handling reply!");
+                ConsoleCol.ConsoleCol.WriteLine("[P] Error handling reply!", ConsoleCol.ConsoleCol.Colors.BrightRed);
                 await Task.Delay(100);
                 continue;
             }
@@ -130,11 +131,11 @@ public class ConfigConsumer : IConsumer<EncryptedConfig>
         {
             var cfg = EncryptionHelper.Decrypt(ctx.Message);
             _state.Active = cfg.Active;
-            Console.WriteLine($"[P] Decrypted Config: active = {_state.Active}");
+            ConsoleCol.ConsoleCol.WriteLine($"[P] Decrypted Config: active = {_state.Active}", ConsoleCol.ConsoleCol.Colors.BrightMagenta);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[P] Decryption error: {ex.Message}");
+            ConsoleCol.ConsoleCol.WriteLine($"[P] Decryption error: {ex.Message}", ConsoleCol.ConsoleCol.Colors.BrightRed);
         }
         return Task.CompletedTask;
     }
@@ -161,7 +162,7 @@ public class PublisherService : BackgroundService
                 {
                     var msg = new PublishMsg { Num = _state.Num };
                     await _bus.Publish(msg, ct);
-                    Console.WriteLine($"[P] Sent PublishMsg {_state.Num}");
+                    ConsoleCol.ConsoleCol.WriteLine($"[P] Sent PublishMsg {_state.Num}", ConsoleCol.ConsoleCol.Colors.BrightYellow);
                     _state.Sent++;
                     _state.Num++;
                 }
@@ -178,10 +179,10 @@ public class PublisherService : BackgroundService
                     var key = Console.ReadKey(true).KeyChar;
                     if (key == 's')
                     {
-                        Console.WriteLine("\n[P] Stats:");
-                        Console.WriteLine($"- ReplyA: {_state.TotalA}, ReplyB: {_state.TotalB}");
-                        Console.WriteLine($"- OkA: {_state.OkA}, OkB: {_state.OkB}");
-                        Console.WriteLine($"- Sent: {_state.Sent}");
+                        ConsoleCol.ConsoleCol.WriteLine("\n[P] Stats:", ConsoleCol.ConsoleCol.Colors.Orange);
+                        ConsoleCol.ConsoleCol.WriteLine($"- ReplyA: {_state.TotalA}, ReplyB: {_state.TotalB}", ConsoleCol.ConsoleCol.Colors.BrightGreen);
+                        ConsoleCol.ConsoleCol.WriteLine($"- OkA: {_state.OkA}, OkB: {_state.OkB}", ConsoleCol.ConsoleCol.Colors.BrightCyan);
+                        ConsoleCol.ConsoleCol.WriteLine($"- Sent: {_state.Sent}", ConsoleCol.ConsoleCol.Colors.BrightYellow);
                     }
                 }
                 catch (OperationCanceledException)

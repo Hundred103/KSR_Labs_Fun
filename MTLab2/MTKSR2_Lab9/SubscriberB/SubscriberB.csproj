@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ConsoleCol\ConsoleCol.csproj" />
     <ProjectReference Include="..\Message\Message.csproj" />
   </ItemGroup>
 

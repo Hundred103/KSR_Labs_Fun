@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using Message;
+using ConsoleCol;
 
 var builder = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
@@ -23,7 +24,7 @@ var builder = Host.CreateDefaultBuilder(args)
 var host = builder.Build();
 var bus = host.Services.GetRequiredService<IBusControl>();
 
-Console.WriteLine("[C] Controller started");
+ConsoleCol.ConsoleCol.WriteLine("[C] Controller started", ConsoleCol.ConsoleCol.Colors.BrightYellow);
 
 var cts = new CancellationTokenSource();
 _ = host.RunAsync(cts.Token);
@@ -35,12 +36,12 @@ while (true)
     {
         var enc = EncryptionHelper.Encrypt(new Config { Active = true });
         await bus.Publish(enc);
-        Console.WriteLine("[C] Start (active = true)");
+        ConsoleCol.ConsoleCol.WriteLine("[C] Start (active = true)", ConsoleCol.ConsoleCol.Colors.BrightGreen);
     }
     if (key == 't')
     {
         var enc = EncryptionHelper.Encrypt(new Config { Active = false });
         await bus.Publish(enc);
-        Console.WriteLine("[C] Stop (active = false)");
+        ConsoleCol.ConsoleCol.WriteLine("[C] Stop (active = false)", ConsoleCol.ConsoleCol.Colors.BrightRed);
     }
 }
