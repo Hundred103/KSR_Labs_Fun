@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using Message;
-using ConsoleCol;
+using ExtensionClass;
 
 var builder = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
@@ -11,7 +11,8 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddMassTransit(x =>
         {
             x.AddConsumer<PublMsgConsumerB>();
-            
+            x.AddConsumer<ReplyBErrConsumer>();
+
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(new Uri("rabbitmq://goose.rmq2.cloudamqp.com/mdioawae"), h =>
@@ -23,6 +24,7 @@ var builder = Host.CreateDefaultBuilder(args)
                 cfg.ReceiveEndpoint("subscriber_b_queue", ep =>
                 {
                     ep.ConfigureConsumer<PublMsgConsumerB>(context);
+                    ep.ConfigureConsumer<ReplyBErrConsumer>(context);
                 });
             });
         });
@@ -30,7 +32,7 @@ var builder = Host.CreateDefaultBuilder(args)
 
 var host = builder.Build();
 
-ConsoleCol.ConsoleCol.WriteLine("[B] Subscriber B started", ConsoleCol.ConsoleCol.Colors.BrightCyan);
+ConsoleCol.WriteLine("[B] Subscriber B started", ConsoleCol.Colors.BrightCyan);
 await host.RunAsync();
 
 public class PublMsgConsumerB : IConsumer<PublishMsg>
@@ -43,12 +45,23 @@ public class PublMsgConsumerB : IConsumer<PublishMsg>
             try
             {
                 await context.RespondAsync(new ReplyB { Sender = "subscriber B" });
-                ConsoleCol.ConsoleCol.WriteLine($"[B] Reply to {n}", ConsoleCol.ConsoleCol.Colors.BrightCyan);
+                ConsoleCol.WriteLine($"[B] Reply to {n}", ConsoleCol.Colors.BrightCyan);
             }
             catch
             {
-                ConsoleCol.ConsoleCol.WriteLine("[B] Exception in reply to Publisher!", ConsoleCol.ConsoleCol.Colors.BrightRed);
+                ConsoleCol.WriteLine("[B] Exception in reply to Publisher!", ConsoleCol.Colors.BrightRed);
             }
         }
+    }
+}
+
+
+public class ReplyBErrConsumer : IConsumer<ReplyBErr>
+{
+    public Task Consume(ConsumeContext<ReplyBErr> context)
+    {
+        var err = context.Message;
+        ConsoleCol.WriteLine($"[B] Received error info from Publisher! Attempt: {err.AttemptNumber}, Details: {err.ErrorMessage}", ConsoleColor.Red);
+        return Task.CompletedTask;
     }
 }

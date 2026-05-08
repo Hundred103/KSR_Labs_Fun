@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ConsoleCol
+namespace ExtensionClass
 {
     public static class ConsoleCol
     {

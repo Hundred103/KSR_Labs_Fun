@@ -25,6 +25,20 @@ namespace Message
         public string Sender { get; set; }
     }
 
+    public class ReplyAErr
+    {
+        public string OriginalSender {  get; set; }
+        public int AttemptNumber { get; set; }  
+        public string ErrorMessage { get; set; }
+    }
+
+    public class ReplyBErr
+    {
+        public string OriginalSender { get; set; }
+        public int AttemptNumber { get; set; }
+        public string ErrorMessage { get; set; }
+    }
+
     public class EncryptedConfig
     {
         public byte[] Iv { get; set; }
@@ -33,7 +47,7 @@ namespace Message
 
     public static class EncryptionHelper
     {
-        private static readonly byte[] Key = Encoding.UTF8.GetBytes("123456123456123456123456");
+        private static readonly byte[] Key = Encoding.UTF8.GetBytes("198263198263198263198263");
 
         public static EncryptedConfig Encrypt(Config config)
         {

@@ -5,19 +5,19 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Message;
-using ConsoleCol;
+using ExtensionClass;
 
 var builder = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
         services.AddSingleton<PublisherState>();
-        
+
         services.AddMassTransit(x =>
         {
             x.AddConsumer<ReplyAConsumer>();
             x.AddConsumer<ReplyBConsumer>();
             x.AddConsumer<ConfigConsumer>();
-            
+
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(new Uri("rabbitmq://goose.rmq2.cloudamqp.com/mdioawae"), h =>
@@ -41,7 +41,7 @@ var builder = Host.CreateDefaultBuilder(args)
 
 var host = builder.Build();
 
-ConsoleCol.ConsoleCol.WriteLine("[P] Publisher started", ConsoleCol.ConsoleCol.Colors.BrightYellow);
+ConsoleCol.WriteLine("[P] Publisher started", ConsoleCol.Colors.BrightYellow);
 await host.RunAsync();
 
 public class PublisherState
@@ -63,26 +63,30 @@ public class ReplyAConsumer : IConsumer<ReplyA>
 
     public async Task Consume(ConsumeContext<ReplyA> ctx)
     {
-        ConsoleCol.ConsoleCol.WriteLine($"[P] Got ReplyA from {ctx.Message.Sender}", ConsoleCol.ConsoleCol.Colors.BrightGreen);
-        await HandleReply(ctx.Message);
-    }
-
-    private async Task HandleReply(object msg)
-    {
-        for (int i = 0; i < 5; i++)
+        ConsoleCol.WriteLine($"[P] Got ReplyA from {ctx.Message.Sender}", ConsoleCol.Colors.BrightGreen);
+        _state.TotalA++;
+        for (int i = 0; i < 3; i++)
         {
-            if (msg is ReplyA) _state.TotalA++;
-            if (msg is ReplyB) _state.TotalB++;
-            if (new Random().NextDouble() < 0.33)
+            try
             {
-                ConsoleCol.ConsoleCol.WriteLine("[P] Error handling reply!", ConsoleCol.ConsoleCol.Colors.BrightRed);
-                await Task.Delay(100);
-                continue;
+                if (new Random().NextDouble() < 0.5)
+                {
+                    throw new Exception($"Random failure while processing ReplyA on attempt {i + 1}!");
+                }
+                _state.OkA++;
+                break;
             }
-
-            if (msg is ReplyA) _state.OkA++;
-            if (msg is ReplyB) _state.OkB++;
-            break;
+            catch (Exception e)
+            {
+                ConsoleCol.WriteLine($"[P] Error handling replyA! Attempt {i + 1}/3", ConsoleCol.Colors.BrightRed);
+                await ctx.Publish(new ReplyAErr
+                {
+                    OriginalSender = ctx.Message.Sender,
+                    AttemptNumber = i+1,
+                    ErrorMessage = e.Message
+                });
+                await Task.Delay(100);
+            }
         }
     }
 }
@@ -95,26 +99,30 @@ public class ReplyBConsumer : IConsumer<ReplyB>
 
     public async Task Consume(ConsumeContext<ReplyB> ctx)
     {
-        ConsoleCol.ConsoleCol.WriteLine($"[P] Got ReplyB from {ctx.Message.Sender}", ConsoleCol.ConsoleCol.Colors.BrightCyan);
-        await HandleReply(ctx.Message);
-    }
-
-    private async Task HandleReply(object msg)
-    {
-        for (int i = 0; i < 5; i++)
+        ConsoleCol.WriteLine($"[P] Got ReplyB from {ctx.Message.Sender}", ConsoleCol.Colors.BrightCyan);
+        _state.TotalB++;
+        for (int i = 0; i < 3; i++)
         {
-            if (msg is ReplyA) _state.TotalA++;
-            if (msg is ReplyB) _state.TotalB++;
-            if (new Random().NextDouble() < 0.33)
+            try
             {
-                ConsoleCol.ConsoleCol.WriteLine("[P] Error handling reply!", ConsoleCol.ConsoleCol.Colors.BrightRed);
-                await Task.Delay(100);
-                continue;
+                if (new Random().NextDouble() < 0.5)
+                {
+                    throw new Exception($"Random failure while processing ReplyB on attempt {i + 1}!");
+                }
+                _state.OkB++;
+                break;
             }
-
-            if (msg is ReplyA) _state.OkA++;
-            if (msg is ReplyB) _state.OkB++;
-            break;
+            catch (Exception e)
+            {
+                ConsoleCol.WriteLine($"[P] Error handling replyB! Attempt {i + 1}/3", ConsoleCol.Colors.BrightRed);
+                await ctx.Publish(new ReplyBErr
+                {
+                    OriginalSender = ctx.Message.Sender,
+                    AttemptNumber = i + 1,
+                    ErrorMessage = e.Message
+                });
+                await Task.Delay(100);
+            }
         }
     }
 }
@@ -131,11 +139,11 @@ public class ConfigConsumer : IConsumer<EncryptedConfig>
         {
             var cfg = EncryptionHelper.Decrypt(ctx.Message);
             _state.Active = cfg.Active;
-            ConsoleCol.ConsoleCol.WriteLine($"[P] Decrypted Config: active = {_state.Active}", ConsoleCol.ConsoleCol.Colors.BrightMagenta);
+            ConsoleCol.WriteLine($"[P] Decrypted Config: active = {_state.Active}", ConsoleCol.Colors.BrightMagenta);
         }
         catch (Exception ex)
         {
-            ConsoleCol.ConsoleCol.WriteLine($"[P] Decryption error: {ex.Message}", ConsoleCol.ConsoleCol.Colors.BrightRed);
+            ConsoleCol.WriteLine($"[P] Decryption error: {ex.Message}", ConsoleCol.Colors.BrightRed);
         }
         return Task.CompletedTask;
     }
@@ -162,7 +170,7 @@ public class PublisherService : BackgroundService
                 {
                     var msg = new PublishMsg { Num = _state.Num };
                     await _bus.Publish(msg, ct);
-                    ConsoleCol.ConsoleCol.WriteLine($"[P] Sent PublishMsg {_state.Num}", ConsoleCol.ConsoleCol.Colors.BrightYellow);
+                    ConsoleCol.WriteLine($"[P] Sent PublishMsg {_state.Num}", ConsoleCol.Colors.BrightYellow);
                     _state.Sent++;
                     _state.Num++;
                 }
@@ -179,10 +187,10 @@ public class PublisherService : BackgroundService
                     var key = Console.ReadKey(true).KeyChar;
                     if (key == 's')
                     {
-                        ConsoleCol.ConsoleCol.WriteLine("\n[P] Stats:", ConsoleCol.ConsoleCol.Colors.Orange);
-                        ConsoleCol.ConsoleCol.WriteLine($"- ReplyA: {_state.TotalA}, ReplyB: {_state.TotalB}", ConsoleCol.ConsoleCol.Colors.BrightGreen);
-                        ConsoleCol.ConsoleCol.WriteLine($"- OkA: {_state.OkA}, OkB: {_state.OkB}", ConsoleCol.ConsoleCol.Colors.BrightCyan);
-                        ConsoleCol.ConsoleCol.WriteLine($"- Sent: {_state.Sent}", ConsoleCol.ConsoleCol.Colors.BrightYellow);
+                        ConsoleCol.WriteLine("\n[P] Stats:", ConsoleCol.Colors.Orange);
+                        ConsoleCol.WriteLine($"- ReplyA: {_state.TotalA}, ReplyB: {_state.TotalB}", ConsoleCol.Colors.BrightGreen);
+                        ConsoleCol.WriteLine($"- OkA: {_state.OkA}, OkB: {_state.OkB}", ConsoleCol.Colors.BrightCyan);
+                        ConsoleCol.WriteLine($"- Sent: {_state.Sent}", ConsoleCol.Colors.BrightYellow);
                     }
                 }
                 catch (OperationCanceledException)
