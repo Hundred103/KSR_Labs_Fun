@@ -1,0 +1,6 @@
+@AzureLab1_HostAddress = http://localhost:5276
+
+GET {{AzureLab1_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
